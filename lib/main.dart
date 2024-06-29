@@ -1,20 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:myappflutter/fetchTasks.dart';
 import 'package:myappflutter/taskpage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  initializeDateFormatting('es_ES', null).then((_) => runApp(MyApp(prefs: prefs)));
+
+  String auth = await postLogin(prefs);
+
+
+  String? authorization = prefs.getString("Authorization");
+
+  Map<String, String> reqHeaders = {
+    "Authorization": authorization ?? auth,
+    "User-Agent": "PostmanRuntime/7.32.1",
+    "selectedstudent": "5ea75880a58cd80010de21e9",
+    "workingyear": "64d4f945782ad59eefd5d92a",
+    "workingschool": "59aebf00f9bc648c2118cc35",
+    "workingprofile": "59b306e6b8432e5340b394b2",
+    "clientversion": "0.9.68"
+  };
+  initializeDateFormatting('es_ES', null).then((_) => runApp(MyApp(prefs: prefs, reqHeaders: reqHeaders,)));
 
 
 }
 
 class MyApp extends StatelessWidget {
   final SharedPreferences prefs;
+  final Map<String, String> reqHeaders;
 
-  const MyApp({super.key, required this.prefs});
+  const MyApp({super.key, required this.prefs, required this.reqHeaders});
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +51,7 @@ class MyApp extends StatelessWidget {
       ),
       home: TaskPage(
         prefs: prefs,
+        reqHeaders: reqHeaders,
       ),
     );
   }

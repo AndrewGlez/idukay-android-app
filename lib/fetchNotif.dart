@@ -1,7 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
-import 'package:shared_preferences/shared_preferences.dart';
 
 
 
@@ -9,8 +8,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 Future<Map> fetchNotifications(Map<String, String> headers) async {
   String BASE_URL = "https://idukay.net/api/alerts?__page=1&__per_page=20&__sort=%7B%22date%22%3A%22desc%22%2C%22_id%22%3A%22desc%22%7D&select=title+read+date+type+reference+student";
 
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  String authorization = prefs.getString("Authorization")!;
 
   final response = await http.get(Uri.parse(BASE_URL), headers: headers);
 
@@ -27,9 +24,6 @@ Future<Map> fetchNotifications(Map<String, String> headers) async {
 
 Future<Map> fetchNotifiContent(String notifId, Map<String, String> headers) async {
   String BASE_URL = "https://idukay.net/api/read_alert";
-
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  String authorization = prefs.getString("Authorization")!;
 
   Map<String, String> body = {
     "_id": notifId

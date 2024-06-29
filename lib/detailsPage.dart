@@ -9,8 +9,9 @@ import 'package:open_file_plus/open_file_plus.dart';
 class DetailsPage extends StatefulWidget {
   final String title;
   final String taskId;
+  final Map<String, String> headers;
 
-  const DetailsPage({super.key, required this.title, required this.taskId});
+  const DetailsPage({super.key, required this.title, required this.taskId, required this.headers});
 
   @override
   State<DetailsPage> createState() => _DetailsPageState();
@@ -27,7 +28,7 @@ class _DetailsPageState extends State<DetailsPage> {
       body: ListView(
         children: [
           FutureBuilder(
-              future: taskDetailFetch(widget.taskId),
+              future: taskDetailFetch(widget.headers,widget.taskId),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   Intl.defaultLocale = 'es';

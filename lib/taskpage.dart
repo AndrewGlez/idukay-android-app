@@ -11,9 +11,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class TaskPage extends StatefulWidget {
   final SharedPreferences prefs;
+  final Map<String, String> reqHeaders;
 
 
-  const TaskPage({super.key, required this.prefs});
+  const TaskPage({super.key, required this.prefs, required this.reqHeaders});
 
   @override
   State<TaskPage> createState() => _TaskPageState();
@@ -25,30 +26,15 @@ class _TaskPageState extends State<TaskPage> {
   late Future<Map> pData;
   late Future<Map> mData;
   late Future<Map> nData;
-  late String? authorization;
-  String? getAuthorization() {
-    return widget.prefs.getString("Authorization");
-  }
-  Map<String, String> reqHeaders = {
-  };
 
   @override
   void initState() {
     super.initState();
-    authorization = getAuthorization();
-     reqHeaders = {
-      "Authorization": authorization ?? "",
-      "User-Agent": "PostmanRuntime/7.32.1",
-      "selectedstudent": "644005763211a66a09b80675",
-      "workingyear": "64d4f946782ad5e57bd5db54",
-      "workingschool": "6081ef0b5802c45d1bdc5330",
-      "workingprofile": "6440056186b45644cb5e99e9",
-      "clientversion": "0.9.68"
-    };
-    data = postLogin(reqHeaders);
-    mData = fetchMessages(reqHeaders);
-    pData = fetchPreviousT(reqHeaders);
-    nData = fetchNotifications(reqHeaders);
+
+    data = fetchArticles(widget.reqHeaders);
+    mData = fetchMessages(widget.reqHeaders);
+    pData = fetchPreviousT(widget.reqHeaders);
+    nData = fetchNotifications(widget.reqHeaders);
   }
 
   @override
@@ -151,7 +137,7 @@ class _TaskPageState extends State<TaskPage> {
                                                           taskId: snapshot
                                                               .data!["response"]
                                                                   [index]["_id"]
-                                                              .toString())));
+                                                              .toString(), headers: widget.reqHeaders,)));
                                         },
                                         title: ConstrainedBox(
                                           constraints: BoxConstraints(
@@ -185,7 +171,7 @@ class _TaskPageState extends State<TaskPage> {
                                 child: CircularProgressIndicator());
                           }),
                       FutureBuilder<Map>(
-                          future: fetchPreviousT(reqHeaders),
+                          future: fetchPreviousT(widget.reqHeaders),
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
                               return ListView.builder(
@@ -252,7 +238,7 @@ class _TaskPageState extends State<TaskPage> {
                                                           taskId: snapshot
                                                               .data!["response"]
                                                                   [index]["_id"]
-                                                              .toString())));
+                                                              .toString(), headers: widget.reqHeaders,)));
                                         },
                                         title: ConstrainedBox(
                                           constraints: BoxConstraints(
@@ -290,7 +276,7 @@ class _TaskPageState extends State<TaskPage> {
                   floatingActionButton: FloatingActionButton(
                     onPressed: () {
                       setState(() {
-                        pData = fetchPreviousT(reqHeaders);
+                        pData = fetchPreviousT(widget.reqHeaders);
                       });
                     },
                     child: const Icon(Icons.refresh),
@@ -320,7 +306,7 @@ class _TaskPageState extends State<TaskPage> {
                                                 [index]["subject"],
                                             id: snapshot.data!["response"]
                                                 [index]["_id"],
-                                        headers: reqHeaders,
+                                        headers: widget.reqHeaders,
                                           )));
                                 },
                                 title: ConstrainedBox(
@@ -353,7 +339,7 @@ class _TaskPageState extends State<TaskPage> {
               floatingActionButton: FloatingActionButton(
                 onPressed: () {
                   setState(() {
-                    mData = fetchMessages(reqHeaders);
+                    mData = fetchMessages(widget.reqHeaders);
                   });
                 },
                 child: const Icon(Icons.refresh),
@@ -365,7 +351,7 @@ class _TaskPageState extends State<TaskPage> {
                 title: const Text("Calificaciones"),
               ),
               body: FutureBuilder<Map>(
-                  future: fetchReportCard(reqHeaders),
+                  future: fetchReportCard(widget.reqHeaders),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       return Column(
@@ -475,7 +461,7 @@ class _TaskPageState extends State<TaskPage> {
                             child: ListTile(
                               onTap: () async {
                                 Map mContent = await fetchNotifiContent(
-                                    snapshot.data!["response"][index]["_id"], reqHeaders);
+                                    snapshot.data!["response"][index]["_id"], widget.reqHeaders);
                                 if (snapshot.data!["response"][index]["type"] ==
                                     "score") {
                                   return showDialog(
